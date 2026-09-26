@@ -9,7 +9,7 @@ public class UserRegisterRequest {
             regexp = "^@[a-z](?=.*[0-9])[a-z0-9]*$",
             message = "Username is not valid eg:@john01"
     )
-    private final String username;
+    private String username;
     @NotBlank
     @Pattern(
             regexp = "^[a-zA-Z0-9]+@gmail\\.com$",
