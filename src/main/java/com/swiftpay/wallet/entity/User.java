@@ -1,20 +1,33 @@
 package com.swiftpay.wallet.entity;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+
 import java.time.Instant;
 
+@Entity
+@Table(name = "users")
 public class User {
-    private int userId;
-    private final String userName;
+    @Id
+    @GeneratedValue(
+            strategy = GenerationType.IDENTITY
+    )
+    private Long userId;
+    @Column(name = "username", unique = true, updatable = false)
+    private String username;
+    @Column(name = "email", unique = true)
     private String userEmailAddress;
     private String password;
-    private final Instant createdAt;
+    private Instant createdAt;
     private Instant updatedAt;
 
-    public User(String userName, Instant createdAt, String userEmailAddress, String password) {
-        this.userName = userName;
-        this.createdAt = createdAt;
+    protected User(){};
+
+    public User(String username, String userEmailAddress, String password) {
+        this.username = username;
         this.userEmailAddress = userEmailAddress;
         this.password = password;
+        this.createdAt = Instant.now();
     }
 
     public void setPassword(String password) {
@@ -26,7 +39,7 @@ public class User {
     }
 
     public String getUserName() {
-        return userName;
+        return username;
     }
 
     public String getUserEmailAddress() {
@@ -41,9 +54,6 @@ public class User {
         return updatedAt;
     }
 
-    public String getPassword() {
-        return password;
-    }
 
     public void touch(){
         this.updatedAt = Instant.now();
