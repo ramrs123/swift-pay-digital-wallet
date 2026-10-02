@@ -31,9 +31,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest request){
-        System.out.println("Check-point-1");
+
         UserLoginResponse response = authService.login(request);
-        System.out.println("Check-point-2");
+
 
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -50,9 +50,9 @@ public class AuthService {
 
     public UserLoginResponse login(UserLoginRequest request){
         User savedUser = repository.findByUsername(request.getUsername());
-        System.out.println("check-point-3");
+
         if(savedUser == null){
-            System.out.println("Check-point-4");
+
             return new UserLoginResponse(
                     null,
                     null,
@@ -72,7 +72,6 @@ public class AuthService {
                     "Login Successful"
             );
         }
-        System.out.println("Check-point-6");
         return new UserLoginResponse(
                 request.getUsername(),
                 request.getPassword(),
