@@ -1,5 +1,7 @@
 package com.swiftpay.wallet.controler;
 
+import com.swiftpay.wallet.dto.auth.UserLoginRequest;
+import com.swiftpay.wallet.dto.auth.UserLoginResponse;
 import com.swiftpay.wallet.dto.auth.UserRegisterRequest;
 import com.swiftpay.wallet.dto.auth.UserRegisterResponse;
 import com.swiftpay.wallet.service.AuthService;
@@ -24,6 +26,17 @@ public class AuthController {
         UserRegisterResponse response = authService.register(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest request){
+        System.out.println("Check-point-1");
+        UserLoginResponse response = authService.login(request);
+        System.out.println("Check-point-2");
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .body(response);
     }
 }
