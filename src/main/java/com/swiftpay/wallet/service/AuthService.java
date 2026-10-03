@@ -5,8 +5,11 @@ import com.swiftpay.wallet.dto.auth.UserLoginResponse;
 import com.swiftpay.wallet.dto.auth.UserRegisterRequest;
 import com.swiftpay.wallet.dto.auth.UserRegisterResponse;
 import com.swiftpay.wallet.entity.User;
+import com.swiftpay.wallet.exception.UserAlreadyExistsException;
+import com.swiftpay.wallet.exception.InvalidCredentialsException;
 import com.swiftpay.wallet.repository.UserRepository;
 import com.swiftpay.wallet.security.JwtService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,15 +22,12 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
+    @Transactional
     public UserRegisterResponse register(UserRegisterRequest request){
 
             if(repository.existsByUsername(request.getUsername())){
 
-                    return new UserRegisterResponse(
-                            request.getUsername(),
-                            request.getUserEmailAddress(),
-                            "User Already exists..."
-                    );
+                    throw new UserAlreadyExistsException("User already exists with these credentials");
             }
 
             String hashedPassword = passwordEncoder.encode(request.getPassword());
@@ -42,7 +42,9 @@ public class AuthService {
             return new UserRegisterResponse(
                     savedUser.getUserName(),
                     savedUser.getUserEmailAddress(),
-                    "User created sucessfully"
+                    "User created sucessfully",
+                    savedUser.getWallet()
+
             );
     }
 
@@ -53,29 +55,22 @@ public class AuthService {
 
         if(savedUser == null){
 
-            return new UserLoginResponse(
-                    null,
-                    null,
-                    "No user found with these credentials"
-
-            );
+            throw new InvalidCredentialsException("Invalid Credentials");
         }
 
-        if(passwordEncoder.matches(request.getPassword(), savedUser.getPasswordHash())){
-            //generate jwt and return
-            System.out.println("Check-point-5");
-            String token = jwtService.generateToken(savedUser);
+        if(!passwordEncoder.matches(request.getPassword(), savedUser.getPasswordHash())){
 
-            return new UserLoginResponse(
-                    savedUser.getUserName(),
-                    token,
-                    "Login Successful"
-            );
+            throw new InvalidCredentialsException("Invalid Credentials");
+
         }
+
+        String token = jwtService.generateToken(savedUser);
+
         return new UserLoginResponse(
-                request.getUsername(),
-                request.getPassword(),
-                "Invalid Credentials"
+                savedUser.getUserName(),
+                token,
+                "Login Successful",
+                savedUser.getWallet()
         );
     }
 

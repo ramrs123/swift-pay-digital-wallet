@@ -7,9 +7,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class UserLoginRequest {
-    @NotBlank
+    @NotBlank(message = "username cannot be blank")
     private String username;
-    @NotBlank
+    @NotBlank(message = "password cannot be blank")
     private String password;
 }
 

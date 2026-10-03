@@ -1,7 +1,10 @@
 package com.swiftpay.wallet.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
@@ -14,43 +17,39 @@ public class User {
     private Long userId;
     @Column(name = "username", unique = true, updatable = false)
     private String username;
+    @Getter
+    @Setter
     @Column(name = "email", unique = true)
     private String userEmailAddress;
+    @Getter
     private String passwordHash;
+    @Getter
+    @OneToOne(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            optional = false,
+            orphanRemoval = true
+    )
+    private Wallet wallet;
+    @Getter
     private Instant createdAt;
+    @Getter
     private Instant updatedAt;
 
     protected User(){};
 
     public User(String username, String userEmailAddress, String passwordHash) {
+        Instant now = Instant.now();
         this.username = username;
         this.userEmailAddress = userEmailAddress;
         this.passwordHash = passwordHash;
-        this.createdAt = Instant.now();
-    }
+        this.createdAt = now;
+        this.wallet = new Wallet(this);
 
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public void setUserEmailAddress(String userEmailAddress) {
-        this.userEmailAddress = userEmailAddress;
     }
 
     public String getUserName() {
         return username;
-    }
-
-    public String getUserEmailAddress() {
-        return userEmailAddress;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
     }
 
 
