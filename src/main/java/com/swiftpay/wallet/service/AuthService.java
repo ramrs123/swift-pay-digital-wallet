@@ -9,6 +9,7 @@ import com.swiftpay.wallet.exception.UserAlreadyExistsException;
 import com.swiftpay.wallet.exception.InvalidCredentialsException;
 import com.swiftpay.wallet.repository.UserRepository;
 import com.swiftpay.wallet.security.JwtService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
+    @Transactional
     public UserRegisterResponse register(UserRegisterRequest request){
 
             if(repository.existsByUsername(request.getUsername())){
@@ -40,7 +42,9 @@ public class AuthService {
             return new UserRegisterResponse(
                     savedUser.getUserName(),
                     savedUser.getUserEmailAddress(),
-                    "User created sucessfully"
+                    "User created sucessfully",
+                    savedUser.getWallet()
+
             );
     }
 
@@ -65,7 +69,8 @@ public class AuthService {
         return new UserLoginResponse(
                 savedUser.getUserName(),
                 token,
-                "Login Successful"
+                "Login Successful",
+                savedUser.getWallet()
         );
     }
 
